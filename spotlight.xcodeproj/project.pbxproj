@@ -3,8 +3,12 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 77;
+	objectVersion = 90;
 	objects = {
+
+/* Begin PBXBuildFile section */
+		2BDA456B2DE7FBF20014D43F /* ARKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2BDA456A2DE7FBF20014D43F /* ARKit.framework */; };
+/* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
 		2BDA454D2DE7F7EA0014D43F /* PBXContainerItemProxy */ = {
@@ -27,6 +31,7 @@
 		2BDA453F2DE7F7E80014D43F /* spotlight.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = spotlight.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		2BDA454C2DE7F7EA0014D43F /* spotlightTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = spotlightTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		2BDA45562DE7F7EA0014D43F /* spotlightUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = spotlightUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		2BDA456A2DE7FBF20014D43F /* ARKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ARKit.framework; path = System/Library/Frameworks/ARKit.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -50,24 +55,19 @@
 /* Begin PBXFrameworksBuildPhase section */
 		2BDA453C2DE7F7E80014D43F /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
 			files = (
+				2BDA456B2DE7FBF20014D43F /* ARKit.framework in Frameworks */,
 			);
-			runOnlyForDeploymentPostprocessing = 0;
 		};
 		2BDA45492DE7F7EA0014D43F /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
 			files = (
 			);
-			runOnlyForDeploymentPostprocessing = 0;
 		};
 		2BDA45532DE7F7EA0014D43F /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
 			files = (
 			);
-			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
@@ -78,6 +78,7 @@
 				2BDA45412DE7F7E80014D43F /* spotlight */,
 				2BDA454F2DE7F7EA0014D43F /* spotlightTests */,
 				2BDA45592DE7F7EA0014D43F /* spotlightUITests */,
+				2BDA45692DE7FBF20014D43F /* Frameworks */,
 				2BDA45402DE7F7E80014D43F /* Products */,
 			);
 			sourceTree = "<group>";
@@ -90,6 +91,14 @@
 				2BDA45562DE7F7EA0014D43F /* spotlightUITests.xctest */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		2BDA45692DE7FBF20014D43F /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				2BDA456A2DE7FBF20014D43F /* ARKit.framework */,
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -105,14 +114,10 @@
 			);
 			buildRules = (
 			);
-			dependencies = (
-			);
 			fileSystemSynchronizedGroups = (
 				2BDA45412DE7F7E80014D43F /* spotlight */,
 			);
 			name = spotlight;
-			packageProductDependencies = (
-			);
 			productName = spotlight;
 			productReference = 2BDA453F2DE7F7E80014D43F /* spotlight.app */;
 			productType = "com.apple.product-type.application";
@@ -134,8 +139,6 @@
 				2BDA454F2DE7F7EA0014D43F /* spotlightTests */,
 			);
 			name = spotlightTests;
-			packageProductDependencies = (
-			);
 			productName = spotlightTests;
 			productReference = 2BDA454C2DE7F7EA0014D43F /* spotlightTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
@@ -157,8 +160,6 @@
 				2BDA45592DE7F7EA0014D43F /* spotlightUITests */,
 			);
 			name = spotlightUITests;
-			packageProductDependencies = (
-			);
 			productName = spotlightUITests;
 			productReference = 2BDA45562DE7F7EA0014D43F /* spotlightUITests.xctest */;
 			productType = "com.apple.product-type.bundle.ui-testing";
@@ -195,7 +196,7 @@
 			);
 			mainGroup = 2BDA45362DE7F7E80014D43F;
 			minimizedProjectReferenceProxies = 1;
-			preferredProjectObjectVersion = 77;
+			preferredProjectObjectVersion = 90;
 			productRefGroup = 2BDA45402DE7F7E80014D43F /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -210,48 +211,36 @@
 /* Begin PBXResourcesBuildPhase section */
 		2BDA453D2DE7F7E80014D43F /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
 			files = (
 			);
-			runOnlyForDeploymentPostprocessing = 0;
 		};
 		2BDA454A2DE7F7EA0014D43F /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
 			files = (
 			);
-			runOnlyForDeploymentPostprocessing = 0;
 		};
 		2BDA45542DE7F7EA0014D43F /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
 			files = (
 			);
-			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		2BDA453B2DE7F7E80014D43F /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
 			files = (
 			);
-			runOnlyForDeploymentPostprocessing = 0;
 		};
 		2BDA45482DE7F7EA0014D43F /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
 			files = (
 			);
-			runOnlyForDeploymentPostprocessing = 0;
 		};
 		2BDA45522DE7F7EA0014D43F /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
 			files = (
 			);
-			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
@@ -269,7 +258,7 @@
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
-		2BDA455E2DE7F7EA0014D43F /* Debug */ = {
+		2BDA455E2DE7F7EA0014D43F /* Debug configuration for PBXProject "spotlight" */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -333,7 +322,7 @@
 			};
 			name = Debug;
 		};
-		2BDA455F2DE7F7EA0014D43F /* Release */ = {
+		2BDA455F2DE7F7EA0014D43F /* Release configuration for PBXProject "spotlight" */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -390,7 +379,7 @@
 			};
 			name = Release;
 		};
-		2BDA45612DE7F7EA0014D43F /* Debug */ = {
+		2BDA45612DE7F7EA0014D43F /* Debug configuration for PBXNativeTarget "spotlight" */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
@@ -400,6 +389,7 @@
 				DEVELOPMENT_TEAM = H4T5UDY9X9;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSCameraUsageDescription = "App需要访问您的摄像头以进行实时视线追踪和生成屏幕注视热区图";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -418,7 +408,7 @@
 			};
 			name = Debug;
 		};
-		2BDA45622DE7F7EA0014D43F /* Release */ = {
+		2BDA45622DE7F7EA0014D43F /* Release configuration for PBXNativeTarget "spotlight" */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
@@ -428,6 +418,7 @@
 				DEVELOPMENT_TEAM = H4T5UDY9X9;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSCameraUsageDescription = "App需要访问您的摄像头以进行实时视线追踪和生成屏幕注视热区图";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -446,7 +437,7 @@
 			};
 			name = Release;
 		};
-		2BDA45642DE7F7EA0014D43F /* Debug */ = {
+		2BDA45642DE7F7EA0014D43F /* Debug configuration for PBXNativeTarget "spotlightTests" */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
@@ -465,7 +456,7 @@
 			};
 			name = Debug;
 		};
-		2BDA45652DE7F7EA0014D43F /* Release */ = {
+		2BDA45652DE7F7EA0014D43F /* Release configuration for PBXNativeTarget "spotlightTests" */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
@@ -484,7 +475,7 @@
 			};
 			name = Release;
 		};
-		2BDA45672DE7F7EA0014D43F /* Debug */ = {
+		2BDA45672DE7F7EA0014D43F /* Debug configuration for PBXNativeTarget "spotlightUITests" */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
@@ -501,7 +492,7 @@
 			};
 			name = Debug;
 		};
-		2BDA45682DE7F7EA0014D43F /* Release */ = {
+		2BDA45682DE7F7EA0014D43F /* Release configuration for PBXNativeTarget "spotlightUITests" */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
@@ -524,37 +515,33 @@
 		2BDA453A2DE7F7E80014D43F /* Build configuration list for PBXProject "spotlight" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				2BDA455E2DE7F7EA0014D43F /* Debug */,
-				2BDA455F2DE7F7EA0014D43F /* Release */,
+				2BDA455E2DE7F7EA0014D43F /* Debug configuration for PBXProject "spotlight" */,
+				2BDA455F2DE7F7EA0014D43F /* Release configuration for PBXProject "spotlight" */,
 			);
-			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
 		2BDA45602DE7F7EA0014D43F /* Build configuration list for PBXNativeTarget "spotlight" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				2BDA45612DE7F7EA0014D43F /* Debug */,
-				2BDA45622DE7F7EA0014D43F /* Release */,
+				2BDA45612DE7F7EA0014D43F /* Debug configuration for PBXNativeTarget "spotlight" */,
+				2BDA45622DE7F7EA0014D43F /* Release configuration for PBXNativeTarget "spotlight" */,
 			);
-			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
 		2BDA45632DE7F7EA0014D43F /* Build configuration list for PBXNativeTarget "spotlightTests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				2BDA45642DE7F7EA0014D43F /* Debug */,
-				2BDA45652DE7F7EA0014D43F /* Release */,
+				2BDA45642DE7F7EA0014D43F /* Debug configuration for PBXNativeTarget "spotlightTests" */,
+				2BDA45652DE7F7EA0014D43F /* Release configuration for PBXNativeTarget "spotlightTests" */,
 			);
-			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
 		2BDA45662DE7F7EA0014D43F /* Build configuration list for PBXNativeTarget "spotlightUITests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				2BDA45672DE7F7EA0014D43F /* Debug */,
-				2BDA45682DE7F7EA0014D43F /* Release */,
+				2BDA45672DE7F7EA0014D43F /* Debug configuration for PBXNativeTarget "spotlightUITests" */,
+				2BDA45682DE7F7EA0014D43F /* Release configuration for PBXNativeTarget "spotlightUITests" */,
 			);
-			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
