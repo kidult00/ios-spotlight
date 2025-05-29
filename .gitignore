@@ -1,0 +1,43 @@
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Build generated
+build/
+DerivedData/
+
+# Various IDEs
+.idea/
+*.xcodeproj/project.xcworkspace/
+*.xcodeproj/xcuserdata/
+*.xcworkspace/shareddata/
+*.xcworkspace/xcuserdata/
+
+# Swift Package Manager
+.swiftpm/
+Packages/
+
+# Cocoapods
+Pods/
+
+# Carthage
+Carthage/Build/
+Carthage/Checkouts/
+
+# Fastlane
+fastlane/report.xml
+fastlane/Preview.html
+fastlane/screenshots/
+fastlane/test_output/
+
+# User-specific files
+*.xcuserdatad
+
+# Secrets (if you have any, add them here)
+# .env
+# secrets.plist
+
+# Large media files (if any, consider Git LFS)
+# *.mp4
+# *.mov
