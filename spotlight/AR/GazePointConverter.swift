@@ -20,13 +20,13 @@ struct GazePointConverter {
         let eyesMidInHead = (leftEyePos + rightEyePos) / 2.0
         let eyesMidInWorld = (headTransform * eyesMidInHead).xyz
 
-        // 2. lookAtPoint 是面部坐标系中的【位置点】（w=1），变换到世界坐标系
-        let lookAt = faceAnchor.lookAtPoint
-        let lookAtInFace = simd_float4(lookAt.x, lookAt.y, lookAt.z, 1)
-        let lookAtInWorld = (headTransform * lookAtInFace).xyz
+        // 2. 从眼球变换矩阵的 Z 轴提取注视方向（比 lookAtPoint 变化范围大得多）
+        let leftGaze = faceAnchor.leftEyeTransform.columns.2.xyz   // 左眼 Z 轴 = 前向
+        let rightGaze = faceAnchor.rightEyeTransform.columns.2.xyz  // 右眼 Z 轴 = 前向
+        let avgGazeInFace = simd_normalize((leftGaze + rightGaze) / 2.0)
 
-        // 3. 注视方向：从双眼中点指向注视点
-        let gazeDirection = simd_normalize(lookAtInWorld - eyesMidInWorld)
+        // 3. 注视方向：面部坐标系 → 世界坐标系（w=0 纯方向，只旋转不平移）
+        let gazeDirection = simd_normalize((headTransform * simd_float4(avgGazeInFace, 0)).xyz)
 
         // 4. 虚拟平面：垂直于摄像头前向，距离根据人脸到摄像头的实际距离动态计算
         let cameraPosition = camera.transform.columns.3.xyz
