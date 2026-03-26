@@ -19,6 +19,10 @@ class HeatmapManager {
     private let imageUpdateInterval: CFTimeInterval = 0.1  // 10fps 刷新热图
     private let ciContext = CIContext(options: [.useSoftwareRenderer: false])
 
+    /// 时间衰减因子（每帧乘以此值）。0.97^30 ≈ 0.40，即 1 秒后旧值衰减到 40%。
+    /// 使热图反映近期注意力而非全程累积。
+    private let decayFactor: Float = 0.97
+
     init(viewSize: CGSize, cellSize: CGFloat = 10.0) {
         self.cellSize = cellSize
         self.gridWidth = Int(ceil(viewSize.width / cellSize))
@@ -26,8 +30,16 @@ class HeatmapManager {
         self.rawGrid = [Float](repeating: 0, count: gridWidth * gridHeight)
     }
 
-    /// 接收新的注视点，以高斯分布在网格中叠加权重
+    /// 接收新的注视点，先衰减旧数据，再以高斯分布叠加新权重
     func addGazePoint(_ point: CGPoint, viewSize: CGSize) {
+        // 时间衰减：所有网格值乘以衰减因子，让旧注视数据逐渐消退
+        let count = rawGrid.count
+        var newMax: Float = 0
+        for i in 0..<count {
+            rawGrid[i] *= decayFactor
+            newMax = max(newMax, rawGrid[i])
+        }
+
         let cellX = Int(point.x / cellSize)
         let cellY = Int(point.y / cellSize)
 
@@ -45,9 +57,10 @@ class HeatmapManager {
                 let weight = exp(-distSq / twoSigmaSq)
                 let idx = ny * gridWidth + nx
                 rawGrid[idx] += weight
-                maxValue = max(maxValue, rawGrid[idx])
+                newMax = max(newMax, rawGrid[idx])
             }
         }
+        maxValue = newMax
 
         // 节流：仅按固定间隔生成热图图像（后台线程生成，避免阻塞主线程）
         let now = CACurrentMediaTime()

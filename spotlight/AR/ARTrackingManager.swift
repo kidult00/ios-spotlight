@@ -24,8 +24,8 @@ class ARTrackingManager: NSObject, ARSessionDelegate {
     private let blinkThreshold: Float = 0.5
     private var lastValidGazePoint: CGPoint?
 
-    // EMA 平滑（smoothingFactor=0.25 → 新值权重 0.75，约 2 帧延迟）
-    var smoothingFactor: Float = 0.25
+    // EMA 平滑（smoothingFactor=0.55 → 新值权重 0.45，约 4 帧延迟，显著减少跳动）
+    var smoothingFactor: Float = 0.55
     private var smoothedPoint: CGPoint?
 
     override init() {
