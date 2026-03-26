@@ -34,10 +34,18 @@ fastlane/test_output/
 # User-specific files
 *.xcuserdatad
 
-# Secrets (if you have any, add them here)
-# .env
-# secrets.plist
+# AI / MCP 工具配置
+.agents/
+.blitz/
+.claude/
+.codex/
+.mcp.json
 
-# Large media files (if any, consider Git LFS)
-# *.mp4
-# *.mov
+# Teenybase 后端（独立部署）
+backend/
+
+# Secrets
+.env
+.env.local
+.env.*.local
+secrets.plist

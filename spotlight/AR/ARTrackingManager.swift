@@ -9,10 +9,24 @@ class ARTrackingManager: NSObject, ARSessionDelegate {
     var gazeScreenPoint: CGPoint?
     var isTracking = false
 
-    private let gazePointConverter = GazePointConverter()
+    /// 校准数据（已校准时使用仿射变换投影）
+    var calibrationData: CalibrationData?
+
+    /// 校准管理器（校准模式下采集原始数据）
+    var calibrationManager: CalibrationManager?
+
+    private var gazePointConverter = GazePointConverter()
     private let viewSize = UIScreen.main.bounds.size
     private var lastUpdateTime: CFTimeInterval = 0
     private let updateInterval: CFTimeInterval = 1.0 / 30.0
+
+    // 眨眼检测
+    private let blinkThreshold: Float = 0.5
+    private var lastValidGazePoint: CGPoint?
+
+    // EMA 平滑（smoothingFactor=0.25 → 新值权重 0.75，约 2 帧延迟）
+    var smoothingFactor: Float = 0.25
+    private var smoothedPoint: CGPoint?
 
     override init() {
         super.init()
@@ -40,18 +54,60 @@ class ARTrackingManager: NSObject, ARSessionDelegate {
         guard now - lastUpdateTime >= updateInterval else { return }
         lastUpdateTime = now
 
-        // autoreleasepool 确保 ARFaceAnchor/ARCamera 等对象在 dispatch 前释放，
-        // 避免 ARFrame 在自动释放池中积压触发 "retaining ARFrames" 警告
         let (point, tracking) = autoreleasepool { () -> (CGPoint?, Bool) in
-            let faceAnchor = frame.anchors.compactMap { $0 as? ARFaceAnchor }.first
-            let pt: CGPoint?
-            if let faceAnchor {
-                pt = gazePointConverter.projectGaze(
-                    faceAnchor: faceAnchor, camera: frame.camera, viewSize: viewSize)
-            } else {
-                pt = nil
+            guard let faceAnchor = frame.anchors.compactMap({ $0 as? ARFaceAnchor }).first else {
+                return (nil, false)
             }
-            return (pt, faceAnchor != nil)
+
+            // 眨眼检测：任一眼 blend shape > 阈值时冻结注视点
+            let leftBlink = faceAnchor.blendShapes[.eyeBlinkLeft]?.floatValue ?? 0
+            let rightBlink = faceAnchor.blendShapes[.eyeBlinkRight]?.floatValue ?? 0
+            if leftBlink > blinkThreshold || rightBlink > blinkThreshold {
+                return (lastValidGazePoint, true)
+            }
+
+            // 校准模式：将原始 tan 值发送给 CalibrationManager
+            if let cm = calibrationManager {
+                if let angles = gazePointConverter.extractRawGazeAngles(
+                    faceAnchor: faceAnchor, camera: frame.camera) {
+                    let tanX = angles.0, tanY = angles.1
+                    DispatchQueue.main.async {
+                        cm.addSample(tanX: tanX, tanY: tanY)
+                    }
+                }
+            }
+
+            // 投影：有校准数据时用仿射变换，否则用默认灵敏度放大
+            let rawPoint: CGPoint?
+            if let cal = calibrationData {
+                rawPoint = gazePointConverter.projectGazeWithCalibration(
+                    faceAnchor: faceAnchor, camera: frame.camera,
+                    viewSize: viewSize, calibration: cal)
+            } else {
+                rawPoint = gazePointConverter.projectGaze(
+                    faceAnchor: faceAnchor, camera: frame.camera, viewSize: viewSize)
+            }
+
+            // EMA 平滑
+            let finalPoint: CGPoint?
+            if let raw = rawPoint {
+                if let prev = smoothedPoint {
+                    let alpha = CGFloat(1.0 - smoothingFactor)
+                    let smoothed = CGPoint(
+                        x: prev.x + alpha * (raw.x - prev.x),
+                        y: prev.y + alpha * (raw.y - prev.y))
+                    smoothedPoint = smoothed
+                    finalPoint = smoothed
+                } else {
+                    smoothedPoint = raw
+                    finalPoint = raw
+                }
+                lastValidGazePoint = finalPoint
+            } else {
+                finalPoint = rawPoint
+            }
+
+            return (finalPoint, true)
         }
 
         DispatchQueue.main.async { [weak self] in

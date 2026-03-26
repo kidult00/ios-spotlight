@@ -3,45 +3,67 @@ import ARKit
 
 struct GazePointConverter {
 
+    /// 水平灵敏度乘数。ARKit 眼球旋转约 ±12°，前置摄像头 FOV 约 60°，
+    /// 需要 ~2.5x 放大才能覆盖全屏宽度。
+    var sensitivityX: Float = 2.5
+
+    /// 垂直灵敏度乘数。Portrait 屏幕更长且眼球垂直旋转范围更小，需要稍大放大。
+    var sensitivityY: Float = 3.0
+
     /// 将用户的 3D 注视数据投影到 2D 屏幕坐标。
-    ///
-    /// 算法：基于注视角度的直接投影
-    /// 1. 从眼球旋转矩阵提取注视方向，转换到世界坐标系
-    /// 2. 将注视方向转到摄像头坐标系，计算角度偏移量（tanX, tanY）
-    /// 3. 在摄像头前方构造合成 3D 点，用 projectPoint 投影到屏幕
-    ///
-    /// 旧方法（射线-虚拟平面交点）的问题：虚拟平面距人脸太近（仅 3cm），
-    /// 导致不同注视角度的交点几乎重合，投影灵敏度仅为屏幕宽度的 2-3%。
+    /// 基于注视角度直接投影，并应用灵敏度放大。
     func projectGaze(faceAnchor: ARFaceAnchor, camera: ARCamera, viewSize: CGSize) -> CGPoint? {
+        guard let (tanX, tanY) = extractRawGazeAngles(faceAnchor: faceAnchor, camera: camera) else {
+            return nil
+        }
+
+        // 应用灵敏度放大，将 ±10-15° 的眼球旋转映射到完整 FOV
+        let amplifiedTanX = tanX * sensitivityX
+        let amplifiedTanY = tanY * sensitivityY
+
+        // 在摄像头前方 1m 处按放大后的角度构造合成 3D 点
+        let syntheticInCam = simd_float4(amplifiedTanX, amplifiedTanY, -1.0, 1.0)
+        let syntheticInWorld = (camera.transform * syntheticInCam).xyz
+
+        return camera.projectPoint(syntheticInWorld, orientation: .portrait, viewportSize: viewSize)
+    }
+
+    /// 使用校准仿射变换直接映射到屏幕坐标（跳过 projectPoint）
+    func projectGazeWithCalibration(
+        faceAnchor: ARFaceAnchor,
+        camera: ARCamera,
+        viewSize: CGSize,
+        calibration: CalibrationData
+    ) -> CGPoint? {
+        guard let (tanX, tanY) = extractRawGazeAngles(faceAnchor: faceAnchor, camera: camera) else {
+            return nil
+        }
+
+        let screenX = calibration.scaleX * tanX + calibration.offsetX
+        let screenY = calibration.scaleY * tanY + calibration.offsetY
+
+        return CGPoint(
+            x: CGFloat(max(0, min(Float(viewSize.width), screenX))),
+            y: CGFloat(max(0, min(Float(viewSize.height), screenY)))
+        )
+    }
+
+    /// 提取原始注视角度值（tanX, tanY），用于校准采集和投影计算
+    func extractRawGazeAngles(faceAnchor: ARFaceAnchor, camera: ARCamera) -> (Float, Float)? {
         let headTransform = faceAnchor.transform
 
-        // 1. 从眼球变换矩阵的 Z 轴提取注视方向（比 lookAtPoint 变化范围大）
         let leftGaze = faceAnchor.leftEyeTransform.columns.2.xyz
         let rightGaze = faceAnchor.rightEyeTransform.columns.2.xyz
         let avgGazeInFace = simd_normalize((leftGaze + rightGaze) / 2.0)
 
-        // 注视方向：面部坐标系 → 世界坐标系（w=0 纯方向，只旋转不平移）
         let gazeWorld = simd_normalize((headTransform * simd_float4(avgGazeInFace, 0)).xyz)
 
-        // 2. 注视方向 → 摄像头坐标系
-        //    摄像头坐标系：+X 右, +Y 上, -Z 前向（朝用户）
-        //    注视从用户指向摄像头 → gazeInCam.z > 0
         let camInverse = simd_inverse(camera.transform)
         let gazeInCam = (camInverse * simd_float4(gazeWorld, 0)).xyz
 
         guard gazeInCam.z > 0.01 else { return nil }
 
-        // 3. 注视角度偏移量（注视方向在摄像头坐标系中的 tan 值）
-        let tanX = gazeInCam.x / gazeInCam.z
-        let tanY = gazeInCam.y / gazeInCam.z
-
-        // 4. 在摄像头前方 1m 处按注视角度构造合成 3D 点
-        //    这样 projectPoint 基于角度而非距离来投影，灵敏度大幅提升
-        let syntheticInCam = simd_float4(tanX, tanY, -1.0, 1.0)
-        let syntheticInWorld = (camera.transform * syntheticInCam).xyz
-
-        // 5. projectPoint 处理 portrait 方向旋转和视口映射
-        return camera.projectPoint(syntheticInWorld, orientation: .portrait, viewportSize: viewSize)
+        return (gazeInCam.x / gazeInCam.z, gazeInCam.y / gazeInCam.z)
     }
 }
 

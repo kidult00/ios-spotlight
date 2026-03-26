@@ -6,6 +6,8 @@ struct ContentView: View {
     @State private var arTrackingManager = ARTrackingManager()
     @State private var heatmapManager = HeatmapManager(viewSize: UIScreen.main.bounds.size)
     @State private var showHeatmap = true
+    @State private var isCalibrating = false
+    @State private var calibrationManager = CalibrationManager(viewSize: UIScreen.main.bounds.size)
 
     var body: some View {
         ZStack {
@@ -58,11 +60,48 @@ struct ContentView: View {
                             .background(.ultraThinMaterial)
                             .clipShape(Circle())
                     }
+
+                    Button {
+                        calibrationManager = CalibrationManager(viewSize: UIScreen.main.bounds.size)
+                        calibrationManager.startCalibration()
+                        arTrackingManager.calibrationManager = calibrationManager
+                        isCalibrating = true
+                    } label: {
+                        Image(systemName: arTrackingManager.calibrationData != nil ? "scope" : "scope")
+                            .font(.title2)
+                            .frame(width: 50, height: 50)
+                            .background(arTrackingManager.calibrationData != nil
+                                ? AnyShapeStyle(.thinMaterial)
+                                : AnyShapeStyle(.ultraThinMaterial))
+                            .clipShape(Circle())
+                            .overlay(
+                                arTrackingManager.calibrationData != nil
+                                    ? Circle().stroke(Color.green, lineWidth: 2)
+                                    : nil
+                            )
+                    }
                 }
                 .padding(.bottom, 50)
             }
         }
+        .overlay {
+            if isCalibrating {
+                CalibrationView(
+                    calibrationManager: calibrationManager,
+                    onComplete: { data in
+                        arTrackingManager.calibrationData = data
+                        arTrackingManager.calibrationManager = nil
+                        isCalibrating = false
+                    },
+                    onCancel: {
+                        arTrackingManager.calibrationManager = nil
+                        isCalibrating = false
+                    }
+                )
+            }
+        }
         .onAppear {
+            arTrackingManager.calibrationData = CalibrationData.load()
             arTrackingManager.startSession()
         }
         .onDisappear {
