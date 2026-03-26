@@ -40,22 +40,23 @@ class ARTrackingManager: NSObject, ARSessionDelegate {
         guard now - lastUpdateTime >= updateInterval else { return }
         lastUpdateTime = now
 
-        let faceAnchor = frame.anchors.compactMap { $0 as? ARFaceAnchor }.first
-        let point: CGPoint?
-
-        if let faceAnchor {
-            point = gazePointConverter.projectGaze(
-                faceAnchor: faceAnchor,
-                camera: frame.camera,
-                viewSize: viewSize
-            )
-        } else {
-            point = nil
+        // autoreleasepool 确保 ARFaceAnchor/ARCamera 等对象在 dispatch 前释放，
+        // 避免 ARFrame 在自动释放池中积压触发 "retaining ARFrames" 警告
+        let (point, tracking) = autoreleasepool { () -> (CGPoint?, Bool) in
+            let faceAnchor = frame.anchors.compactMap { $0 as? ARFaceAnchor }.first
+            let pt: CGPoint?
+            if let faceAnchor {
+                pt = gazePointConverter.projectGaze(
+                    faceAnchor: faceAnchor, camera: frame.camera, viewSize: viewSize)
+            } else {
+                pt = nil
+            }
+            return (pt, faceAnchor != nil)
         }
 
         DispatchQueue.main.async { [weak self] in
             self?.gazeScreenPoint = point
-            self?.isTracking = faceAnchor != nil
+            self?.isTracking = tracking
         }
     }
 
