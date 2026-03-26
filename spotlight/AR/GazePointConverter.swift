@@ -28,7 +28,7 @@ struct GazePointConverter {
         return camera.projectPoint(syntheticInWorld, orientation: .portrait, viewportSize: viewSize)
     }
 
-    /// 使用校准仿射变换直接映射到屏幕坐标（跳过 projectPoint）
+    /// 使用校准 2D 仿射变换直接映射到屏幕坐标（跳过 projectPoint）
     func projectGazeWithCalibration(
         faceAnchor: ARFaceAnchor,
         camera: ARCamera,
@@ -38,14 +38,7 @@ struct GazePointConverter {
         guard let (tanX, tanY) = extractRawGazeAngles(faceAnchor: faceAnchor, camera: camera) else {
             return nil
         }
-
-        let screenX = calibration.scaleX * tanX + calibration.offsetX
-        let screenY = calibration.scaleY * tanY + calibration.offsetY
-
-        return CGPoint(
-            x: CGFloat(max(0, min(Float(viewSize.width), screenX))),
-            y: CGFloat(max(0, min(Float(viewSize.height), screenY)))
-        )
+        return calibration.mapToScreen(tanX: tanX, tanY: tanY, viewSize: viewSize)
     }
 
     /// 提取原始注视角度值（tanX, tanY），用于校准采集和投影计算
